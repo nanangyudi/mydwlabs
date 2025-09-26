@@ -21,3 +21,9 @@ __pycache__/
 *.log
 .DS_Store
 
+# Archive
+docker-compose.cloudbeaver.yml.final
+docker-compose.yml.arch
+docker-compose.yml.arch1
+docker-compose.yml.final
+.env.example
