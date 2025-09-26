@@ -1,0 +1,1 @@
+{"employee_id": "int64", "employee_name": "str", "work_email": "str", "work_phone": "str", "mobile_phone": "str", "active": "bool", "company_id": "int64", "department_id": "int64", "job_id": "int64", "create_date": "datetime64[ns]", "write_date": "datetime64[ns]", "department_name": "dict", "job_name": "dict", "company_name": "str"}

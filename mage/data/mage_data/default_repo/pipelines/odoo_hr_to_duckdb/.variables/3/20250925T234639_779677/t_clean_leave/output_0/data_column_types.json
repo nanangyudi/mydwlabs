@@ -1,0 +1,1 @@
+{"leave_id": "int64", "employee_id": "int64", "leave_type_id": "int64", "request_date_from": "datetime64[ns, UTC]", "request_date_to": "datetime64[ns, UTC]", "number_of_days": "float64", "state": "str", "create_date": "datetime64[ns, UTC]", "write_date": "datetime64[ns, UTC]", "_ingested_at": "datetime64[ns, UTC]"}

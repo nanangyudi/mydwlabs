@@ -1,0 +1,23 @@
+# Docker volumes / runtime data
+pgdata/
+odoo/filestore/
+clickhouse/data/
+clickhouse/logs/
+cloudbeaver/workspace/
+
+# Mage runtime & secrets
+mage/mage_data/io_config.yaml
+mage/data/duckdb/**/*.duckdb
+mage/data/duckdb/*.duckdb
+mage/data/duckdb/backup_*/
+mage/data/.mage/
+.home/
+.venv/
+__pycache__/
+*.pyc
+
+# Misc
+.env
+*.log
+.DS_Store
+

@@ -1,0 +1,198 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: default
+    dbt: {}
+    disable_query_preprocessing: false
+    export_write_policy: append
+    limit: 1000
+    use_raw_sql: false
+  downstream_blocks:
+  - t_clean_employee
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: sql
+  name: load_hr_employee
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_hr_employee
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: default
+    dbt: {}
+    disable_query_preprocessing: false
+    export_write_policy: append
+    limit: 1000
+    use_raw_sql: false
+  downstream_blocks:
+  - t_clean_attendance
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: sql
+  name: load_hr_attendance
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_hr_attendance
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    data_provider: postgres
+    data_provider_profile: default
+    dbt: {}
+    disable_query_preprocessing: false
+    export_write_policy: append
+    limit: 1000
+    use_raw_sql: false
+  downstream_blocks:
+  - t_clean_leave
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: sql
+  name: load_hr_leave
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_hr_leave
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - dim_employee_ch
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: t_clean_employee
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_hr_employee
+  uuid: t_clean_employee
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - fact_attendance_ch
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: t_clean_attendance
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_hr_attendance
+  uuid: t_clean_attendance
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - fact_leave_ch
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: t_clean_leave
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_hr_leave
+  uuid: t_clean_leave
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: fact_leave_CH
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - t_clean_leave
+  uuid: fact_leave_ch
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: fact_attendance_ch
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - t_clean_attendance
+  uuid: fact_attendance_ch
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: dim_employee_ch
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - t_clean_employee
+  uuid: dim_employee_ch
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2025-09-24 05:58:27.607156+00:00'
+data_integration: null
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: odoo_hr_to_duckdb
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: odoo_hr_to_duckdb
+variables:
+  duckdb_path: /home/src/duckdb/odoo_wh.duckdb
+  last_att_ts: '1970-01-01'
+  last_emp_ts: '1970-01-01'
+  last_leave_ts: '1970-01-01'
+variables_dir: /home/src/mage_data/default_repo
+widgets: []

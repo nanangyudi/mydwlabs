@@ -1,0 +1,2 @@
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "get_postgres"}, "timestamp": 1758684973, "user": 1}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "odoo_hr_to_duckdb"}, "timestamp": 1758693508, "user": 1}

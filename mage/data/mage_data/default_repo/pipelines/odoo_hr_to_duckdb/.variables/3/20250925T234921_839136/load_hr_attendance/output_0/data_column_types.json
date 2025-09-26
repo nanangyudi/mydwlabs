@@ -1,0 +1,1 @@
+{"attendance_id": "int64", "employee_id": "int64", "check_in": "datetime64[ns]", "check_out": "datetime64[ns]", "worked_hours": "float64", "create_date": "datetime64[ns]", "write_date": "datetime64[ns]"}
