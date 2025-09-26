@@ -1,0 +1,83 @@
+#version: "3.9"
+
+services:
+  # === server wsarehouse dgn CH ===
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    restart: always
+    environment:
+      - CLICKHOUSE_DB=odoo_dwh
+      - CLICKHOUSE_USER=odoo
+      - CLICKHOUSE_PASSWORD=odooadm
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    ports:
+      - "8123:8123"     # HTTP (JDBC juga bisa via http)
+      - "9000:9000"     # Native protocol
+    volumes:
+      - ./clickhouse/data:/var/lib/clickhouse:Z
+      - ./clickhouse/logs:/var/log/clickhouse-server:Z
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8123/ping | grep -q 'Ok'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === PostgreSQL (shared untuk Mage & Odoo) ===
+  postgres:
+    # Kalau cluster lama sudah ada, SANGAT disarankan pin versi sesuai PG_VERSION (15/16, dst).
+    image: elestio/postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odooadm
+      - POSTGRES_DB=postgres            # hindari auto-create DB 'odoo'
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"                     # ubah ke "5433:5432" jika 5432 host bentrok
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data:Z
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro,Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -h 127.0.0.1 -p 5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === Mage (pakai DB 'mageai' di Postgres shared) ===
+  mage:
+    image: elestio/mage-ai:latest
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - REQUIRE_USER_AUTHENTICATION=1
+    volumes:
+      - ./mage/data:/home/src
+      - ./mage/mage_data:/root/.mage_data
+    ports:
+      - "6789:6789"
+
+  # === Odoo (pakai DB 'odoo' di Postgres shared) ===
+  odoo:
+    image: odoo:17.0
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - ADMIN_PASSWORD=odoo_master
+      # - WITHOUT_DEMO=all   # aktifkan saat create DB via UI jika ingin tanpa demo data
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./odoo/extra-addons:/mnt/extra-addons
+      - odoo_filestore:/var/lib/odoo
+      - ./odoo/odoo.conf:/etc/odoo/odoo.conf:ro,Z   # ⬅️ kunci utamanya
+
+volumes:
+  odoo_filestore:

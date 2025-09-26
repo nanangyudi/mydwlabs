@@ -25,11 +25,11 @@ services:
         condition: service_healthy
     environment:
       - REQUIRE_USER_AUTHENTICATION=${MAGE_REQUIRE_AUTH}
+    ports:
+      - "${MAGE_PORT}:6789"
     volumes:
       - ./mage/data:/home/src
       - ./mage/mage_data:/root/.mage_data
-    ports:
-      - "${MAGE_PORT}:6789"
 
   odoo:
     image: odoo:17.0
@@ -45,21 +45,21 @@ services:
           #      --db_password=${ODOO_DB_PASSWORD}
           #      --db-filter=${ODOO_DB_FILTER}
     environment:
-      - ADMIN_PASSWORD=${ODOO_ADMIN_PASSWORD}
-        #- WITHOUT_DEMO=all
+      - ADMIN_PASSWORD=${ODOO_MASTER}
+        #      - WITHOUT_DEMO=all
     ports:
-      - "${ODOO_PORT}:8069"
+      - "${ODOO_HTTP_PORT}:8069"
     volumes:
-      - ./odoo/extra-addons:/mnt/extra-addons
-      - ./odoo/filestore:/var/lib/odoo
+      - ./odoo/extra-addons:/mnt/extra-addons:Z
+      - ./odoo/filestore:/var/lib/odoo:Z
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.8
     restart: always
     environment:
       - CLICKHOUSE_DB=${CH_DB}
-      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
-      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_USER=${CH_USER}
+      - CLICKHOUSE_PASSWORD=${CH_PASSWORD}
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
     ports:
       - "${CH_HTTP_PORT}:8123"

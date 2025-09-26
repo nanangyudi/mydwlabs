@@ -1,0 +1,22 @@
+#version: "3.9"
+
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:24.2.3
+    restart: always
+    ports:
+      - "8978:8978"                                # akses: http://<IP-VM>:8978
+    environment:
+      - CB_SERVER_NAME=MyDW-Labs                   # opsional, label di UI
+    volumes:
+      - ./cloudbeaver/workspace:/opt/cloudbeaver/workspace:Z   # persist config/users
+      - ./mage/data/duckdb:/workspace/duckdb:Z                  # mount file DuckDB
+
+  # opsional: shell duckdb buat cek cepat via CLI
+  duckdb-cli:
+    image: ghcr.io/duckdb/duckdb:latest
+    entrypoint: ["tail","-f","/dev/null"]
+    working_dir: /work
+    volumes:
+      - ./mage/data/duckdb:/work:Z
+

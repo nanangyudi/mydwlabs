@@ -1,0 +1,80 @@
+#version: "3.9"
+
+services:
+  # === PostgreSQL untuk Mage ===
+  postgres:
+    image: elestio/postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=mageai
+      - POSTGRES_PASSWORD=mageaiadm
+      - POSTGRES_DB=mageai
+      - PGDATA=/var/lib/postgresql/data/pgdata   # gunakan PGDATA (bukan PG_DATA)
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === Mage ===
+  mage:
+    image: elestio/mage-ai:latest
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - REQUIRE_USER_AUTHENTICATION=1
+      # opsional: set timezone/log, dsb
+      # - TZ=Asia/Jakarta
+    volumes:
+      - ./mage/data:/home/src
+      - ./mage/mage_data:/root/.mage_data
+    ports:
+      - "6789:6789"
+
+  # === PostgreSQL untuk Odoo ===
+  odoo-db:
+    image: elestio/postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odooadm
+      - POSTGRES_DB=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./odoo/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === Odoo (playground) ===
+  odoo:
+    image: odoo:17.0    # boleh ganti ke tag lain (16.0/15.0) sesuai kebutuhan
+    restart: always
+    depends_on:
+      odoo-db:
+        condition: service_healthy
+    environment:
+      # koneksi ke Postgres
+      - HOST=odoo-db
+      - PORT=5432
+      - USER=odoo
+      - PASSWORD=odooadm
+      # password DB manager (untuk create/drop DB dari web)
+      - ADMIN_PASSWORD=odoo_master
+      # opsional: nama DB default jika ingin auto-load
+      # - DATABASE=odoo
+    ports:
+      - "8069:8069"             # web UI
+      # - "8072:8072"           # live chat longpolling (opsional)
+    volumes:
+      - ./odoo/extra-addons:/mnt/extra-addons     # untuk custom addons
+      - ./odoo/filestore:/var/lib/odoo            # filestore & config persistent
+
